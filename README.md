@@ -66,7 +66,24 @@ Interactive docs: `http://localhost:8000/docs`.
 
 ## Design Decisions
 
-*Coming soon.*
+The project uses two representations:
+- `CarListing` — for business logic such as model, year, and model
+- `CarListingRequest` — Pydantic model that validates inputs before they reach the handler
+
+This is separated for two reasons:
+1. **Separation of concerns** — I can change API structure without change business logic, and vice versa.
+2. **Performance** — For example, when I import a lot of records I don't want validate every record because it is problem for performance
+
+### Why FastAPI?
+
+- Type-hint driven design with built-in Pydantic validation
+- Auto-generated OpenAPI documentation at `/docs`
+- Native async support for future LLM and database calls
+
+### Why Docker?
+
+The DockerFile uses python:3.11-slim because it is smaller and compatible. Dependecies are copied before application code to leverage because it uses docker layer caching and result is pip install is skiped.
+
 
 ## Roadmap
 

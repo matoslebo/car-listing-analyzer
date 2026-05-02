@@ -1,0 +1,7 @@
+services:
+  api:
+    build: . # root = "."
+    container_name: car-listing-analyzer-api  #nazov kontajneru
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
