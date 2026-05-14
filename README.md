@@ -67,7 +67,7 @@ Interactive docs: `http://localhost:8000/docs`.
 ## Design Decisions
 
 The project uses two representations:
-- `CarListing` — for business logic such as model, year, and model
+- `CarListing` — for business logic such as model, year, and km
 - `CarListingRequest` — Pydantic model that validates inputs before they reach the handler
 
 This is separated for two reasons:
@@ -82,8 +82,7 @@ This is separated for two reasons:
 
 ### Why Docker?
 
-The DockerFile uses python:3.11-slim because it is smaller and compatible. Dependecies are copied before application code to leverage because it uses docker layer caching and result is pip install is skiped.
-
+The Dockerfile uses python:3.11-slim because it is smaller and compatible. Dependencies are copied before application code to leverage Docker layer caching. As a result, pip install is skipped during builds when only the application code changes.
 
 ## Roadmap
 
