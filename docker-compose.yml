@@ -3,5 +3,7 @@ services:
     build: . # root = "."
     container_name: car-listing-analyzer-api  #nazov kontajneru
     ports:
-      - "8000:8000"
-    restart: unless-stopped
+      - "8000:8000" # port na hostovi a port v kontaijneri
+    volumes:
+      - ./data:/app/data:ro # bind-mount datasetu (read-only)
+    restart: unless-stopped # reštart okrem manualneho zastavenia
