@@ -1,0 +1,7 @@
+Make,Model,Body,Mileage_km,Price,Year,Country,Condition,Fuel_Type,Fuel_Consumption_l,Drivetrain,Gearbox,Gears,Power_hp,Engine_Size_cc,Cylinders,Seats,Doors,Color,Upholstery,Full_Service_History,Non_Smoker_Vehicle,Previous_Owners,Seller,Image_url
+BMW,320d,Sedan,150000,15000,2018,DE,Used,Diesel,5.5,RWD,Manual,6,184,1995,4,5,4,Black,Cloth,True,True,2,Dealer,
+Skoda,Octavia,Sedan,80000,18000,2020,CZ,Used,Gasoline,6.2,FWD,Manual,5,150,1498,4,5,4,Silver,Cloth,True,False,1,Dealer,
+,Passat,Sedan,90000,12000,2019,DE,Used,Diesel,5.0,FWD,Automatic,7,150,1968,4,5,4,Grey,Cloth,True,True,2,Dealer,
+Mercedes,C-Class,Sedan,16777215,25000,2020,DE,Used,Gasoline,7.0,RWD,Automatic,7,200,1991,4,5,4,Black,Leather,True,True,1,Dealer,
+Bugatti,Chiron,Coupe,5000,2500000,2022,FR,Used,Gasoline,22.0,AWD,Automatic,7,1500,7993,16,2,2,Blue,Leather,True,True,1,Dealer,
+Honda,Civic,Sedan,50000,1,2015,DE,Used,Gasoline,6.5,FWD,Manual,5,140,1500,4,5,4,Red,Cloth,True,True,2,Dealer,
