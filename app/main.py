@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.api import listings
 from app.services.data_loader import load_listings
+from app.services.vector_store import VectorStore
 
 
 @asynccontextmanager
@@ -11,14 +12,17 @@ async def lifespan(app: FastAPI):
     app.state.listings = load_listings("data/raw/dataset.csv")
     print(f"Loaded {len(app.state.listings)} listings into memory")
     
-    yield  # App runs here
+    # Startup: initialize vector store
+    print("Initializing vector store...")
+    app.state.vector_store = VectorStore()
+    print(f"Vector store ready with {app.state.vector_store.count()} listings")
     
-    # Shutdown: cleanup (nothing to clean up yet)
+    yield
 
 
 app = FastAPI(
     title="Car Listing Analyzer",
-    version="0.2.0",
+    version="0.3.0",   # ← 0.2.0 → 0.3.0
     lifespan=lifespan,
 )
 

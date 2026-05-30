@@ -3,3 +3,6 @@ uvicorn[standard]
 pydantic
 pandas
 pytest
+openai
+chromadb
+python-dotenv
