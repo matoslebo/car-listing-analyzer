@@ -5,6 +5,7 @@ from fastapi import APIRouter, Query, Request
 
 from app.models.listing import CarListing
 from app.models.schemas import CarListingRequest
+from app.services.llm_service import generate_recommendation
 from app.services.pricing_service import analyze_deal
 from app.services.similarity_service import find_similar_listings
 
@@ -27,11 +28,15 @@ def analyze_listing(request: Request, payload: CarListingRequest) -> dict:
     current_year = date.today().year
     deal_analysis = analyze_deal(listing, similar_listings, current_year)
 
+    llm_recommendation = generate_recommendation(listing, similar_listings, deal_analysis, current_year)
+
     return {
         "input": listing.to_dict(current_year),
         "similar_listings": similar_listings,
         **deal_analysis,
+        "llm_recommendation": llm_recommendation
     }
+    
 
 
 @router.get("/sample")

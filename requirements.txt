@@ -6,3 +6,7 @@ pytest
 openai
 chromadb
 python-dotenv
+langchain
+langchain-openai
+langchain-core
+numpy
