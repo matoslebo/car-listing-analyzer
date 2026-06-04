@@ -1,9 +1,24 @@
 services:
   api:
-    build: . # root = "."
-    container_name: car-listing-analyzer-api  #nazov kontajneru
+    build: .
+    container_name: car-analyzer-api
     ports:
-      - "8000:8000" # port na hostovi a port v kontaijneri
+      - "8000:8000"
+    restart: unless-stopped
+    env_file:
+      - .env
     volumes:
-      - ./data:/app/data:ro # bind-mount datasetu (read-only)
-    restart: unless-stopped # reštart okrem manualneho zastavenia
+      - ./data:/app/data
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: car-analyzer-frontend
+    ports:
+      - "8501:8501"
+    restart: unless-stopped
+    environment:
+      - API_URL=http://api:8000
+    depends_on:
+      - api

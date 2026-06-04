@@ -1,1 +1,28 @@
+# Environment
 .env
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE
+.idea/
+.vscode/
+
+# Data — full dataset and chromadb NOT in git
+data/raw/
+data/chroma_db/
+
+# IMPORTANT: data/chroma_db_demo/ IS in git for deployment
+# (no exclude rule for it)
+
+# Testing
+.pytest_cache/
+
+# Misc
+*.zip
+.DS_Store
