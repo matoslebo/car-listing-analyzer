@@ -1,99 +1,105 @@
-# Car Listing Analyzer
+# 🚗 Car Listing Analyzer
 
-AI-powered tool that analyzes used car listings and recommends whether 
-the deal is fair, based on similarity search over a dataset of comparable 
-vehicles and an LLM-generated explanation.
+AI-powered tool to analyze used car listings — extracts key details, finds similar vehicles from the market, estimates fair pricing, detects risks, and provides natural-language recommendations.
 
-> ⚠️ **Status:** Work in progress. Built as a portfolio project to 
-> demonstrate AI engineering fundamentals (RAG, FastAPI, Docker, LangChain).
+**Live demo:** https://car-listing-analyzer-hzkelau5hqo6t5whgjy9qk.streamlit.app
+**API docs:** https://car-listing-analyzer.onrender.com/docs
 
-## Overview
+## What it does
 
-Given a used car listing (text input), the system:
-1. Extracts structured information (make, model, year, mileage, price)
-2. Retrieves similar vehicles from a reference dataset
-3. Estimates a fair price range based on comparables
-4. Identifies potential risks (e.g. above-average mileage)
-5. Generates a natural-language recommendation using an LLM
-
-## Tech Stack
-
-- **FastAPI** — REST API framework
-- **Pydantic** — input validation and data modeling
-- **ChromaDB** — vector store for similarity search
-- **LangChain** — LLM orchestration layer
-- **OpenAI API** — recommendation generation
-- **Docker** — containerization
-- **Streamlit** — minimal frontend (planned)
+Input a car listing (make, model, year, mileage, price) and get:
+- **Fair price estimate** with 10th-90th percentile range from similar market listings
+- **Deal quality** rating: excellent / good / fair / poor / overpriced
+- **Risk detection**: high mileage, old car, suspicious pricing, above market
+- **AI recommendation**: buy / inspect_then_buy / negotiate / avoid with natural language summary
 
 ## Architecture
+User → Streamlit UI → FastAPI backend → ChromaDB (vector search)
+→ Pricing engine (statistical analysis)
+→ LangChain + OpenAI GPT-4o-mini (LLM advisor)
 
-*Coming soon.*
+## Tech stack
 
-## Project Structure
+- **Backend:** FastAPI, Pydantic, Python 3.11
+- **Vector search:** ChromaDB with OpenAI text-embedding-3-small (1536-dim, cosine similarity)
+- **LLM orchestration:** LangChain (LCEL chains, structured output via JsonOutputParser)
+- **Pricing logic:** numpy (median, percentiles), custom risk detection
+- **Frontend:** Streamlit with reactive form
+- **Infrastructure:** Docker Compose, deployed on Render (backend) + Streamlit Cloud (frontend)
+- **Testing:** pytest with mocked LLM tests (18 tests across data, vector store, pricing, LLM)
+- **Data:** Kaggle "EU Used Cars" dataset (40k listings, cleaned to 37k)
 
-​```
-app/
-  models/      # Domain classes and Pydantic schemas
-  services/    # Business logic (pricing, retrieval, LLM)
-  api/         # FastAPI route handlers
-  main.py      # App entry point
-data/          # Reference dataset
-notebooks/     # Exploratory data analysis
-tests/         # Pytest test suite
-​```
+## Design decisions
 
-## Setup
+- **Median + percentiles, not mean** — robust to outliers in skewed price distributions
+- **Cosine similarity (not L2 default)** — better for semantic embedding comparison
+- **gpt-4o-mini, temperature 0.3** — consistent business recommendations with mild variation
+- **Pydantic schema for LLM output** — Literal enum forces valid recommendation values; JsonOutputParser validates structure
+- **Separate similarity service** — DRY pattern, used by both `/similar` and `/analyze` endpoints
+- **Demo mode (5000 cars) for deployment** — fits Render free tier; full dataset (37k) for local development
+- **Multi-service Docker** — frontend and backend as separate containers, communicate via service name
 
-### Requirements
-- Docker & Docker Compose
-- Python 3.11+ (for local development without Docker)
-- OpenAI API key
+## Local setup
 
-### Run with Docker
-​```bash
+```bash
+# 1. Clone
+git clone https://github.com/matoslebo/car-listing-analyzer
+cd car-listing-analyzer
+
+# 2. Download dataset from Kaggle
+# https://www.kaggle.com/datasets/alemazz11/eu-used-cars
+# Place CSV at data/raw/dataset.csv
+
+# 3. Configure environment
 cp .env.example .env
-# Add your OPENAI_API_KEY to .env
+# Add OPENAI_API_KEY to .env
+
+# 4. Build full vector store (one-time, ~3 minutes, ~$0.01)
+python -m scripts.build_vector_store
+
+# 5. Run with Docker Compose
 docker compose up --build
-​```
 
-API will be available at `http://localhost:8000`.  
-Interactive docs: `http://localhost:8000/docs`.
+# 6. Open
+# Backend: http://localhost:8000/docs
+# Frontend: http://localhost:8501
+```
 
-## Usage
+## Project structure
+car-listing-analyzer/
+├── app/
+│   ├── api/listings.py             # FastAPI endpoints
+│   ├── models/                     # Domain class + Pydantic schemas
+│   ├── services/
+│   │   ├── data_loader.py          # CSV → CarListing pipeline
+│   │   ├── embedding_service.py    # OpenAI embeddings
+│   │   ├── vector_store.py         # ChromaDB wrapper
+│   │   ├── similarity_service.py   # find_similar_listings()
+│   │   ├── pricing_service.py      # fair price, risks, deal quality
+│   │   └── llm_service.py          # LangChain + structured output
+│   └── main.py                     # FastAPI app + lifespan
+├── frontend/
+│   ├── streamlit_app.py            # Streamlit UI
+│   └── Dockerfile
+├── scripts/
+│   ├── build_vector_store.py       # Full dataset embedding pipeline
+│   └── build_demo_vector_store.py  # 5k sample for deployment
+├── tests/                          # 18 pytest tests
+├── notebooks/                      # Data exploration
+└── notes.md                        # Engineering journal across 6 weekends
 
-*Coming soon.*
+## Test suite
 
-## Design Decisions
+```bash
+pytest tests/ -v
+```
 
-The project uses two representations:
-- `CarListing` — for business logic such as model, year, and km
-- `CarListingRequest` — Pydantic model that validates inputs before they reach the handler
-
-This is separated for two reasons:
-1. **Separation of concerns** — I can change API structure without change business logic, and vice versa.
-2. **Performance** — For example, when I import a lot of records I don't want validate every record because it is problem for performance
-
-### Why FastAPI?
-
-- Type-hint driven design with built-in Pydantic validation
-- Auto-generated OpenAPI documentation at `/docs`
-- Native async support for future LLM and database calls
-
-### Why Docker?
-
-The Dockerfile uses python:3.11-slim because it is smaller and compatible. Dependencies are copied before application code to leverage Docker layer caching. As a result, pip install is skipped during builds when only the application code changes.
-
-## Roadmap
-
-- [x] Project scaffolding, FastAPI skeleton, Docker setup
-- [ ] Dataset ingestion and exploration
-- [ ] Vector embeddings + similarity search (ChromaDB)
-- [ ] Pricing logic and risk detection
-- [ ] LLM-based recommendation (LangChain + OpenAI)
-- [ ] Streamlit UI
-- [ ] Deployment
+Coverage:
+- Data loading + cleaning (5 tests)
+- Vector store operations (3 tests)
+- Pricing logic + risks + deal quality (10 tests, including parametrized)
+- LLM service with mocked chain (2 tests)
 
 ## License
 
-MIT
+MIT — see LICENSE file
