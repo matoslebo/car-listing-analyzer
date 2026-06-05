@@ -5,9 +5,8 @@ import requests
 import streamlit as st
 
 
-# Backend URL — different for local vs Docker
-# In Docker compose, services talk via service name on internal network
-API_URL = os.getenv("API_URL", "http://localhost:8000")
+
+API_URL = os.getenv("API_URL", "https://car-listing-analyzer.onrender.com")
 
 
 def main():
